@@ -1,0 +1,19 @@
+# Lightweight dependencies optimized for Raspberry Pi Zero W
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlite3  # Built into Python
+pydantic==2.5.0
+python-multipart==0.0.6
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-dotenv==1.0.0
+aiofiles==23.2.1
+psutil==5.9.6
+netifaces==0.11.0
+mitmproxy==10.1.5
+requests==2.31.0
+websockets==12.0
+
+# Pi Zero W specific optimizations
+py-cpuinfo==9.0.0  # CPU monitoring
+gpiozero==2.1      # GPIO control (if needed)

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target-Centric Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>
+        .loading {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <h1 class="text-2xl font-bold">🎯 Target-Centric Admin Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <span id="adminUsername" class="text-sm"></span>
+                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Login Form -->
+        <div id="loginForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-center mb-6">🔐 Admin Login</h2>
+            <form onsubmit="login(event)">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
+                    <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                    <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Login
+                </button>
+            </form>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div id="dashboard" class="hidden">
+            <!-- Tabs -->
+            <div class="mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <button onclick="showTab('overview')" class="tab-btn py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-tab="overview">
+                            📊 Overview
+                        </button>
+                        <button onclick="showTab('devices')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="devices">
+                            📱 Devices
+                        </button>
+                        <button onclick="showTab('rules')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="rules">
+                            ⚙️ Rules
+                        </button>
+                        <button onclick="showTab('logs')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="logs">
+                            📝 Logs
+                        </button>
+                        <button onclick="showTab('settings')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="settings">
+                            ⚙️ Settings
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="tabContent">
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-content">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-700">Connected Devices</h3>
+                            <p id="deviceCount" class="text-3xl font-bold text-blue-600">-</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-700">Active Rules</h3>
+                            <p id="ruleCount" class="text-3xl font-bold text-green-600">-</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-700">CPU Usage</h3>
+                            <p id="cpuUsage" class="text-3xl font-bold text-orange-600">-</p>
+                        </div>
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold text-gray-700">Memory Usage</h3>
+                            <p id="memoryUsage" class="text-3xl font-bold text-red-600">-</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">System Status</h3>
+                        <div id="systemStatus" class="text-sm text-gray-600">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Devices Tab -->
+                <div id="devices" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Connected Devices</h3>
+                        <div id="devicesList" class="text-sm text-gray-600">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Rules Tab -->
+                <div id="rules" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Filtering Rules</h3>
+                        <div id="rulesList" class="text-sm text-gray-600">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Logs Tab -->
+                <div id="logs" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">System Logs</h3>
+                        <div id="logsList" class="text-sm text-gray-600">Loading...</div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings" class="tab-content hidden">
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-6">Settings</h3>
+                        
+                        <!-- Change Password Section -->
+                        <div class="mb-8">
+                            <h4 class="text-md font-semibold text-gray-700 mb-4">🔑 Change Password</h4>
+                            <form onsubmit="changePassword(event)" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                                    <input type="password" id="currentPassword" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                                    <input type="password" id="newPassword" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+                                    <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with uppercase, lowercase, and number</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                                    <input type="password" id="confirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+                                </div>
+                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                                    Change Password
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- System Reset Section -->
+                        <div class="border-t pt-6">
+                            <h4 class="text-md font-semibold text-red-700 mb-4">⚠️ System Reset</h4>
+                            <p class="text-sm text-gray-600 mb-4">This will reset all settings to factory defaults, including admin password.</p>
+                            <button onclick="confirmReset()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                                Reset All Settings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications -->
+    <div id="notification" class="fixed top-4 right-4 hidden"></div>
+
+    <script>
+        // Global variables
+        let authToken = null;
+        let currentTab = 'overview';
+
+        // API base URL
+        const API_BASE = 'http://localhost:8000';
+
+        // Axios configuration
+        axios.defaults.baseURL = API_BASE;
+
+        // Check if already logged in
+        window.onload = function() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                authToken = token;
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                showDashboard();
+                loadOverview();
+            }
+        };
+
+        // Login function
+        async function login(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await axios.post('/login', { username, password });
+                authToken = response.data.access_token;
+                localStorage.setItem('authToken', authToken);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+                
+                showNotification('Login successful!', 'success');
+                showDashboard();
+                loadOverview();
+            } catch (error) {
+                showNotification(error.response?.data?.detail || 'Login failed', 'error');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('authToken');
+            delete axios.defaults.headers.common['Authorization'];
+            hideDashboard();
+            showNotification('Logged out successfully', 'success');
+        }
+
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('adminUsername').textContent = 'Admin';
+        }
+
+        // Hide dashboard
+        function hideDashboard() {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active state from all tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Activate selected tab button
+            event.target.classList.remove('border-transparent', 'text-gray-500');
+            event.target.classList.add('border-blue-500', 'text-blue-600');
+            
+            currentTab = tabName;
+            
+            // Load tab-specific data
+            switch(tabName) {
+                case 'overview':
+                    loadOverview();
+                    break;
+                case 'devices':
+                    loadDevices();
+                    break;
+                case 'rules':
+                    loadRules();
+                    break;
+                case 'logs':
+                    loadLogs();
+                    break;
+                case 'settings':
+                    loadSettings();
+                    break;
+            }
+        }
+
+        // Load overview data
+        async function loadOverview() {
+            try {
+                const [statusResponse, statsResponse] = await Promise.all([
+                    axios.get('/status'),
+                    axios.get('/stats')
+                ]);
+                
+                const status = statusResponse.data;
+                const stats = statsResponse.data;
+                
+                document.getElementById('deviceCount').textContent = status.wifi_connected_devices || 0;
+                document.getElementById('ruleCount').textContent = status.active_rules || 0;
+                document.getElementById('cpuUsage').textContent = `${Math.round(status.cpu_usage || 0)}%`;
+                document.getElementById('memoryUsage').textContent = `${Math.round(status.memory_usage || 0)}%`;
+                
+                const systemStatus = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><strong>System:</strong> ${status.system}</div>
+                        <div><strong>Uptime:</strong> ${Math.round(status.uptime / 3600)} hours</div>
+                        <div><strong>Temperature:</strong> ${status.temperature}°C</div>
+                        <div><strong>Disk Usage:</strong> ${Math.round(status.disk_usage)}%</div>
+                    </div>
+                `;
+                document.getElementById('systemStatus').innerHTML = systemStatus;
+                
+            } catch (error) {
+                console.error('Error loading overview:', error);
+                document.getElementById('systemStatus').innerHTML = 'Error loading system status';
+            }
+        }
+
+        // Load devices
+        async function loadDevices() {
+            try {
+                const response = await axios.get('/devices');
+                const devices = response.data;
+                
+                if (devices.length === 0) {
+                    document.getElementById('devicesList').innerHTML = 'No devices connected';
+                    return;
+                }
+                
+                const devicesHtml = devices.map(device => `
+                    <div class="border-b py-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <strong>${device.hostname || 'Unknown'}</strong><br>
+                                <span class="text-gray-500">${device.ip_address} (${device.mac_address})</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <span class="px-2 py-1 rounded text-xs ${device.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                    ${device.status}
+                                </span>
+                                <button onclick="blockDevice('${device.ip_address}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">
+                                    Block
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('devicesList').innerHTML = devicesHtml;
+                
+            } catch (error) {
+                console.error('Error loading devices:', error);
+                document.getElementById('devicesList').innerHTML = 'Error loading devices';
+            }
+        }
+
+        // Load rules
+        async function loadRules() {
+            try {
+                const response = await axios.get('/rules');
+                const rules = response.data;
+                
+                if (rules.length === 0) {
+                    document.getElementById('rulesList').innerHTML = 'No rules configured';
+                    return;
+                }
+                
+                const rulesHtml = rules.map(rule => `
+                    <div class="border-b py-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <strong>${rule.name}</strong><br>
+                                <span class="text-gray-500">${rule.pattern} → ${rule.action}</span>
+                            </div>
+                            <div class="flex space-x-2">
+                                <span class="px-2 py-1 rounded text-xs ${rule.status === 'on' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                    ${rule.status}
+                                </span>
+                                <button onclick="toggleRule(${rule.id})" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
+                                    ${rule.status === 'on' ? 'Disable' : 'Enable'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('rulesList').innerHTML = rulesHtml;
+                
+            } catch (error) {
+                console.error('Error loading rules:', error);
+                document.getElementById('rulesList').innerHTML = 'Error loading rules';
+            }
+        }
+
+        // Load logs
+        async function loadLogs() {
+            try {
+                // For now, show a simple message. In a real implementation, you'd fetch logs
+                document.getElementById('logsList').innerHTML = 'Log viewing functionality coming soon...';
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                document.getElementById('logsList').innerHTML = 'Error loading logs';
+            }
+        }
+
+        // Load settings
+        async function loadSettings() {
+            try {
+                const response = await axios.get('/admin-info');
+                const adminInfo = response.data;
+                
+                // You could display admin info here if needed
+                console.log('Admin info loaded:', adminInfo);
+                
+            } catch (error) {
+                console.error('Error loading settings:', error);
+            }
+        }
+
+        // Change password
+        async function changePassword(event) {
+            event.preventDefault();
+            
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('New passwords do not match', 'error');
+                return;
+            }
+            
+            try {
+                await axios.post('/change-password', {
+                    current_password: currentPassword,
+                    new_password: newPassword,
+                    confirm_password: confirmPassword
+                });
+                
+                showNotification('Password changed successfully!', 'success');
+                
+                // Clear form
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+                
+            } catch (error) {
+                showNotification(error.response?.data?.detail || 'Failed to change password', 'error');
+            }
+        }
+
+        // Block device
+        async function blockDevice(ipAddress) {
+            try {
+                await axios.post('/device/block', { ip_address: ipAddress });
+                showNotification(`Device ${ipAddress} blocked successfully`, 'success');
+                loadDevices(); // Refresh the list
+            } catch (error) {
+                showNotification(error.response?.data?.detail || 'Failed to block device', 'error');
+            }
+        }
+
+        // Toggle rule
+        async function toggleRule(ruleId) {
+            try {
+                await axios.post(`/rules/toggle/${ruleId}`);
+                showNotification('Rule toggled successfully', 'success');
+                loadRules(); // Refresh the list
+            } catch (error) {
+                showNotification(error.response?.data?.detail || 'Failed to toggle rule', 'error');
+            }
+        }
+
+        // Confirm system reset
+        async function confirmReset() {
+            if (confirm('⚠️ WARNING: This will reset ALL settings to factory defaults!\n\nThis includes:\n• Admin password reset to default\n• All device rules cleared\n• All logs cleared\n• All configurations reset\n\nType "RESET" to confirm:')) {
+                const confirmation = prompt('Type "RESET" to confirm:');
+                if (confirmation === 'RESET') {
+                    try {
+                        const response = await axios.post('/reset-system');
+                        showNotification(response.data.message, 'success');
+                        
+                        // Logout user after reset
+                        setTimeout(() => {
+                            logout();
+                        }, 2000);
+                        
+                    } catch (error) {
+                        showNotification(error.response?.data?.detail || 'System reset failed', 'error');
+                    }
+                }
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded text-white ${colors[type]} shadow-lg`;
+            notification.textContent = message;
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Auto-refresh overview every 30 seconds
+        setInterval(() => {
+            if (currentTab === 'overview' && authToken) {
+                loadOverview();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

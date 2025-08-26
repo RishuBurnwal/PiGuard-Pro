@@ -1,0 +1,33 @@
+[Unit]
+Description=Target-Centric Admin Dashboard Backend
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/pi/hotspot-dashboard
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=PYTHONPATH=/home/pi/hotspot-dashboard
+Environment=ADMIN_PASSWORD=your_secure_password_here
+Environment=SECRET_KEY=your_secret_key_here
+ExecStart=/usr/bin/python3 /home/pi/hotspot-dashboard/start_backend.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Pi Zero W specific optimizations
+Nice=-10
+IOSchedulingClass=1
+IOSchedulingPriority=4
+
+# Security settings
+NoNewPrivileges=false
+PrivateTmp=false
+ProtectSystem=false
+ProtectHome=false
+
+[Install]
+WantedBy=multi-user.target

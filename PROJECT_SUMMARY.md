@@ -3,6 +3,10 @@
 ## 🎯 Project Overview
 A complete Raspberry Pi Zero W hotspot control system with comprehensive device management, content filtering, and real-time monitoring capabilities.
 
+**Author**: Rishu Burnwal ([GitHub](https://github.com/RishuBurnwal))
+**License**: MIT License
+**Repository**: [https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git)
+
 ## 📁 Project Structure
 
 ```

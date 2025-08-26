@@ -381,3 +381,11 @@ The project is licensed under the MIT License, which provides:
 **🔑 Security Note**: Always change the default password (admin/admin123) immediately after installation. The system includes robust password validation and secure storage mechanisms.
 
 **🔄 Reset Warning**: The system reset functionality will clear ALL data and settings. Use only when absolutely necessary and ensure you have backups of important configurations.
+
+---
+
+## 👨‍💻 **Author & Maintainer**
+
+**Rishu Burnwal** - [GitHub Profile](https://github.com/RishuBurnwal)
+
+This project is developed and maintained by Rishu Burnwal. For questions, issues, or contributions, please visit the GitHub repository or contact the maintainer.

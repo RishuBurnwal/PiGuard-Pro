@@ -387,6 +387,7 @@ The project is licensed under the MIT License, which provides:
 ## 👨‍💻 **Author & Maintainer**
 
 **Rishu Burnwal** - [GitHub Profile](https://github.com/RishuBurnwal)
+
 **Rishu Burnwal** - [LinkedIn Profile](https://www.linkedin.com/in/rishuburnwal/)
 
 This project is developed and maintained by Rishu Burnwal. For questions, issues, or contributions, please visit the GitHub repository or contact the maintainer.

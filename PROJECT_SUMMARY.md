@@ -5,7 +5,7 @@ A complete Raspberry Pi Zero W hotspot control system with comprehensive device 
 
 **Author**: Rishu Burnwal ([GitHub](https://github.com/RishuBurnwal))
 **License**: MIT License
-**Repository**: [https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git)
+**Repository**: [https://github.com/RishuBurnwal/PiGuard-Pro.git](https://github.com/RishuBurnwal/PiGuard-Pro.git)
 
 ## 📁 Project Structure
 

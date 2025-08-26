@@ -398,8 +398,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Rishu Burnwal** - [LinkedIn Profile](https://www.linkedin.com/in/rishuburnwal/)
 
 - **Project**: PiGuard Pro - Advanced Network Control Dashboard
-- **Repository**: [https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git)
-- **Contact**: [GitHub Issues](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server/issues)
+- **Repository**: [https://github.com/RishuBurnwal/PiGuard-Pro.git](https://github.com/RishuBurnwal/PiGuard-Pro.git)
+- **Contact**: [GitHub Issues](https://github.com/RishuBurnwal/PiGuard-Pro/issues)
 
 **PiGuard Pro** is actively maintained and regularly updated with new features and security improvements.
 
@@ -409,7 +409,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🛡️ PiGuard Pro** - *Professional Network Security for Raspberry Pi*
 
-[![GitHub stars](https://img.shields.io/github/stars/RishuBurnwal/Raspberry-Pi-Advanced-chat-server?style=social)](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server)
-[![GitHub forks](https://img.shields.io/github/forks/RishuBurnwal/Raspberry-Pi-Advanced-chat-server?style=social)](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server)
+[![GitHub stars](https://img.shields.io/github/stars/RishuBurnwal/PiGuard-Pro?style=social)](https://github.com/RishuBurnwal/PiGuard-Pro)
+[![GitHub forks](https://img.shields.io/github/forks/RishuBurnwal/PiGuard-Pro?style=social)](https://github.com/RishuBurnwal/PiGuard-Pro)
 
 </div>

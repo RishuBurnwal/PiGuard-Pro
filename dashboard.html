@@ -3,517 +3,603 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Target-Centric Admin Dashboard</title>
+    <title>🛡️ PiGuard Pro - Network Control Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <style>
-        .loading {
-            animation: spin 1s linear infinite;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-red': '#c41e3a',
+                        'pi-dark': '#1f2937'
+                    }
+                }
+            }
         }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-    </style>
+    </script>
 </head>
 <body class="bg-gray-100 min-h-screen">
-    <!-- Navigation -->
-    <nav class="bg-blue-600 text-white shadow-lg">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <h1 class="text-2xl font-bold">🎯 Target-Centric Admin Dashboard</h1>
-                <div class="flex items-center space-x-4">
-                    <span id="adminUsername" class="text-sm"></span>
-                    <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded">Logout</button>
-                </div>
+    <!-- Login Form -->
+    <div id="loginForm" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-pi-red to-red-800">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-96">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-pi-red mb-2">🛡️ PiGuard Pro</h1>
+                <p class="text-gray-600">Advanced Network Control Dashboard</p>
             </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto px-4 py-6">
-        <!-- Login Form -->
-        <div id="loginForm" class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-bold text-center mb-6">🔐 Admin Login</h2>
-            <form onsubmit="login(event)">
-                <div class="mb-4">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Username</label>
-                    <input type="text" id="username" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+            
+            <form id="loginFormElement" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                    <input type="text" id="username" name="username" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pi-red">
                 </div>
-                <div class="mb-6">
-                    <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
-                    <input type="password" id="password" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <input type="password" id="password" name="password" required 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pi-red">
                 </div>
-                <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                    Login
+                
+                <button type="submit" 
+                        class="w-full bg-pi-red text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-200 font-medium">
+                    Login to PiGuard Pro
                 </button>
             </form>
-        </div>
-
-        <!-- Dashboard Content -->
-        <div id="dashboard" class="hidden">
-            <!-- Tabs -->
-            <div class="mb-6">
-                <div class="border-b border-gray-200">
-                    <nav class="-mb-px flex space-x-8">
-                        <button onclick="showTab('overview')" class="tab-btn py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-tab="overview">
-                            📊 Overview
-                        </button>
-                        <button onclick="showTab('devices')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="devices">
-                            📱 Devices
-                        </button>
-                        <button onclick="showTab('rules')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="rules">
-                            ⚙️ Rules
-                        </button>
-                        <button onclick="showTab('logs')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="logs">
-                            📝 Logs
-                        </button>
-                        <button onclick="showTab('settings')" class="tab-btn py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="settings">
-                            ⚙️ Settings
-                        </button>
-                    </nav>
-                </div>
-            </div>
-
-            <!-- Tab Content -->
-            <div id="tabContent">
-                <!-- Overview Tab -->
-                <div id="overview" class="tab-content">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-700">Connected Devices</h3>
-                            <p id="deviceCount" class="text-3xl font-bold text-blue-600">-</p>
-                        </div>
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-700">Active Rules</h3>
-                            <p id="ruleCount" class="text-3xl font-bold text-green-600">-</p>
-                        </div>
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-700">CPU Usage</h3>
-                            <p id="cpuUsage" class="text-3xl font-bold text-orange-600">-</p>
-                        </div>
-                        <div class="bg-white rounded-lg shadow p-6">
-                            <h3 class="text-lg font-semibold text-gray-700">Memory Usage</h3>
-                            <p id="memoryUsage" class="text-3xl font-bold text-red-600">-</p>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-4">System Status</h3>
-                        <div id="systemStatus" class="text-sm text-gray-600">Loading...</div>
-                    </div>
-                </div>
-
-                <!-- Devices Tab -->
-                <div id="devices" class="tab-content hidden">
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Connected Devices</h3>
-                        <div id="devicesList" class="text-sm text-gray-600">Loading...</div>
-                    </div>
-                </div>
-
-                <!-- Rules Tab -->
-                <div id="rules" class="tab-content hidden">
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Filtering Rules</h3>
-                        <div id="rulesList" class="text-sm text-gray-600">Loading...</div>
-                    </div>
-                </div>
-
-                <!-- Logs Tab -->
-                <div id="logs" class="tab-content hidden">
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-4">System Logs</h3>
-                        <div id="logsList" class="text-sm text-gray-600">Loading...</div>
-                    </div>
-                </div>
-
-                <!-- Settings Tab -->
-                <div id="settings" class="tab-content hidden">
-                    <div class="bg-white rounded-lg shadow p-6">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-6">Settings</h3>
-                        
-                        <!-- Change Password Section -->
-                        <div class="mb-8">
-                            <h4 class="text-md font-semibold text-gray-700 mb-4">🔑 Change Password</h4>
-                            <form onsubmit="changePassword(event)" class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                                    <input type="password" id="currentPassword" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                                    <input type="password" id="newPassword" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
-                                    <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with uppercase, lowercase, and number</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-                                    <input type="password" id="confirmPassword" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500" required>
-                                </div>
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                                    Change Password
-                                </button>
-                            </form>
-                        </div>
-
-                        <!-- System Reset Section -->
-                        <div class="border-t pt-6">
-                            <h4 class="text-md font-semibold text-red-700 mb-4">⚠️ System Reset</h4>
-                            <p class="text-sm text-gray-600 mb-4">This will reset all settings to factory defaults, including admin password.</p>
-                            <button onclick="confirmReset()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
-                                Reset All Settings
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
+            <div id="loginError" class="mt-4 text-red-600 text-center hidden"></div>
         </div>
     </div>
 
-    <!-- Notifications -->
-    <div id="notification" class="fixed top-4 right-4 hidden"></div>
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold text-pi-red">🛡️ PiGuard Pro</h1>
+                        <span class="ml-3 text-sm text-gray-500">Network Control Center</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <span id="adminInfo" class="text-sm text-gray-600"></span>
+                        <button onclick="logout()" 
+                                class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-200 text-sm">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="bg-white border-b border-gray-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8">
+                    <button onclick="showTab('overview')" 
+                            class="tab-button py-4 px-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300 active">
+                        📊 Overview
+                    </button>
+                    <button onclick="showTab('devices')" 
+                            class="tab-button py-4 px-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        🖥️ Devices
+                    </button>
+                    <button onclick="showTab('rules')" 
+                            class="tab-button py-4 px-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        ⚙️ Rules
+                    </button>
+                    <button onclick="showTab('logs')" 
+                            class="tab-button py-4 px-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        📝 Logs
+                    </button>
+                    <button onclick="showTab('settings')" 
+                            class="tab-button py-4 px-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                        ⚙️ Settings
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content">
+                <div class="px-4 py-6 sm:px-0">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Overview</h2>
+                    
+                    <!-- Status Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="p-5">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white text-sm">✓</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">System Status</dt>
+                                            <dd id="systemStatus" class="text-lg font-medium text-gray-900">Loading...</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="p-5">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white text-sm">📱</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">Connected Devices</dt>
+                                            <dd id="deviceCount" class="text-lg font-medium text-gray-900">Loading...</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="p-5">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white text-sm">⚙️</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">Active Rules</dt>
+                                            <dd id="activeRules" class="text-lg font-medium text-gray-900">Loading...</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                            <div class="p-5">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white text-sm">🔥</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-5 w-0 flex-1">
+                                        <dl>
+                                            <dt class="text-sm font-medium text-gray-500 truncate">CPU Temperature</dt>
+                                            <dd id="cpuTemp" class="text-lg font-medium text-gray-900">Loading...</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Charts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white shadow rounded-lg p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">CPU & Memory Usage</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>CPU Usage</span>
+                                        <span id="cpuUsage">0%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div id="cpuBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Memory Usage</span>
+                                        <span id="memoryUsage">0%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div id="memoryBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white shadow rounded-lg p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Network Activity</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Active Connections</span>
+                                        <span id="activeConnections">0</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div id="connectionsBar" class="bg-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                        <span>Uptime</span>
+                                        <span id="uptime">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Devices Tab -->
+            <div id="devices" class="tab-content hidden">
+                <div class="px-4 py-6 sm:px-0">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Connected Devices</h2>
+                    <div id="devicesList" class="bg-white shadow rounded-lg p-6">
+                        Loading...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rules Tab -->
+            <div id="rules" class="tab-content hidden">
+                <div class="px-4 py-6 sm:px-0">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Filtering Rules</h2>
+                    <div id="rulesList" class="bg-white shadow rounded-lg p-6">
+                        Loading...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs" class="tab-content hidden">
+                <div class="px-4 py-6 sm:px-0">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Logs</h2>
+                    <div id="logsList" class="bg-white shadow rounded-lg p-6">
+                        Log viewing functionality coming soon...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings" class="tab-content hidden">
+                <div class="px-4 py-6 sm:px-0">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">System Settings</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Change Password -->
+                        <div class="bg-white shadow rounded-lg p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">🔐 Change Admin Password</h3>
+                            <form id="changePasswordForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                    <input type="password" id="currentPassword" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pi-red">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                    <input type="password" id="newPassword" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pi-red">
+                                    <p class="text-xs text-gray-500 mt-1">Minimum 8 characters, include uppercase, lowercase, and number</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                                    <input type="password" id="confirmPassword" required 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pi-red">
+                                </div>
+                                
+                                <button type="submit" 
+                                        class="bg-pi-red text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-200">
+                                    Update Password
+                                </button>
+                            </form>
+                            
+                            <div id="passwordMessage" class="mt-4 hidden"></div>
+                        </div>
+
+                        <!-- System Reset -->
+                        <div class="bg-white shadow rounded-lg p-6">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">🔄 System Reset</h3>
+                            <div class="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                        </svg>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-red-800">⚠️ Warning: Factory Reset</h3>
+                                        <div class="mt-2 text-sm text-red-700">
+                                            <p>This will reset PiGuard Pro to factory defaults:</p>
+                                            <ul class="list-disc list-inside mt-1">
+                                                <li>Clear all device data</li>
+                                                <li>Remove all custom rules</li>
+                                                <li>Reset admin password to "admin123"</li>
+                                                <li>Clear all logs and settings</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button onclick="resetSystem()" 
+                                    class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition duration-200 w-full">
+                                🔄 Reset PiGuard Pro to Factory Defaults
+                            </button>
+                            
+                            <div id="resetMessage" class="mt-4 hidden"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
 
     <script>
         // Global variables
-        let authToken = null;
+        let authToken = '';
         let currentTab = 'overview';
+        let refreshInterval;
 
-        // API base URL
-        const API_BASE = 'http://localhost:8000';
-
-        // Axios configuration
-        axios.defaults.baseURL = API_BASE;
-
-        // Check if already logged in
-        window.onload = function() {
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
             const token = localStorage.getItem('authToken');
             if (token) {
                 authToken = token;
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 showDashboard();
-                loadOverview();
             }
-        };
+            
+            // Setup form handlers
+            document.getElementById('loginFormElement').addEventListener('submit', handleLogin);
+            document.getElementById('changePasswordForm').addEventListener('submit', handleChangePassword);
+        });
 
-        // Login function
-        async function login(event) {
-            event.preventDefault();
+        // Handle login
+        async function handleLogin(e) {
+            e.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
+            
             try {
-                const response = await axios.post('/login', { username, password });
-                authToken = response.data.access_token;
-                localStorage.setItem('authToken', authToken);
-                axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
                 
-                showNotification('Login successful!', 'success');
-                showDashboard();
-                loadOverview();
+                const data = await response.json();
+                
+                if (response.ok) {
+                    authToken = data.access_token;
+                    localStorage.setItem('authToken', authToken);
+                    showDashboard();
+                } else {
+                    showLoginError(data.detail || 'Login failed');
+                }
             } catch (error) {
-                showNotification(error.response?.data?.detail || 'Login failed', 'error');
+                showLoginError('Network error. Please try again.');
             }
         }
 
-        // Logout function
-        function logout() {
-            authToken = null;
-            localStorage.removeItem('authToken');
-            delete axios.defaults.headers.common['Authorization'];
-            hideDashboard();
-            showNotification('Logged out successfully', 'success');
+        // Show login error
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
         }
 
         // Show dashboard
         function showDashboard() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('adminUsername').textContent = 'Admin';
+            
+            // Load initial data
+            loadAdminInfo();
+            loadOverviewData();
+            
+            // Start auto-refresh
+            refreshInterval = setInterval(loadOverviewData, 5000);
         }
 
-        // Hide dashboard
-        function hideDashboard() {
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-        }
-
-        // Tab management
-        function showTab(tabName) {
-            // Hide all tab contents
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.classList.add('hidden');
-            });
-            
-            // Remove active state from all tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('border-blue-500', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-gray-500');
-            });
-            
-            // Show selected tab content
-            document.getElementById(tabName).classList.remove('hidden');
-            
-            // Activate selected tab button
-            event.target.classList.remove('border-transparent', 'text-gray-500');
-            event.target.classList.add('border-blue-500', 'text-blue-600');
-            
-            currentTab = tabName;
-            
-            // Load tab-specific data
-            switch(tabName) {
-                case 'overview':
-                    loadOverview();
-                    break;
-                case 'devices':
-                    loadDevices();
-                    break;
-                case 'rules':
-                    loadRules();
-                    break;
-                case 'logs':
-                    loadLogs();
-                    break;
-                case 'settings':
-                    loadSettings();
-                    break;
+        // Load admin info
+        async function loadAdminInfo() {
+            try {
+                const response = await fetch('/admin-info', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('adminInfo').textContent = `Admin: ${data.username}`;
+                }
+            } catch (error) {
+                console.error('Error loading admin info:', error);
             }
         }
 
         // Load overview data
-        async function loadOverview() {
+        async function loadOverviewData() {
             try {
-                const [statusResponse, statsResponse] = await Promise.all([
-                    axios.get('/status'),
-                    axios.get('/stats')
-                ]);
+                // Load system status
+                const statusResponse = await fetch('/status', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
                 
-                const status = statusResponse.data;
-                const stats = statsResponse.data;
-                
-                document.getElementById('deviceCount').textContent = status.wifi_connected_devices || 0;
-                document.getElementById('ruleCount').textContent = status.active_rules || 0;
-                document.getElementById('cpuUsage').textContent = `${Math.round(status.cpu_usage || 0)}%`;
-                document.getElementById('memoryUsage').textContent = `${Math.round(status.memory_usage || 0)}%`;
-                
-                const systemStatus = `
-                    <div class="grid grid-cols-2 gap-4">
-                        <div><strong>System:</strong> ${status.system}</div>
-                        <div><strong>Uptime:</strong> ${Math.round(status.uptime / 3600)} hours</div>
-                        <div><strong>Temperature:</strong> ${status.temperature}°C</div>
-                        <div><strong>Disk Usage:</strong> ${Math.round(status.disk_usage)}%</div>
-                    </div>
-                `;
-                document.getElementById('systemStatus').innerHTML = systemStatus;
-                
-            } catch (error) {
-                console.error('Error loading overview:', error);
-                document.getElementById('systemStatus').innerHTML = 'Error loading system status';
-            }
-        }
-
-        // Load devices
-        async function loadDevices() {
-            try {
-                const response = await axios.get('/devices');
-                const devices = response.data;
-                
-                if (devices.length === 0) {
-                    document.getElementById('devicesList').innerHTML = 'No devices connected';
-                    return;
+                if (statusResponse.ok) {
+                    const statusData = await statusResponse.json();
+                    document.getElementById('systemStatus').textContent = statusData.status;
+                    document.getElementById('deviceCount').textContent = statusData.connected_devices;
+                    document.getElementById('activeRules').textContent = statusData.active_rules;
+                    document.getElementById('uptime').textContent = statusData.uptime;
                 }
                 
-                const devicesHtml = devices.map(device => `
-                    <div class="border-b py-3">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <strong>${device.hostname || 'Unknown'}</strong><br>
-                                <span class="text-gray-500">${device.ip_address} (${device.mac_address})</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                <span class="px-2 py-1 rounded text-xs ${device.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                    ${device.status}
-                                </span>
-                                <button onclick="blockDevice('${device.ip_address}')" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs">
-                                    Block
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                // Load performance data
+                const perfResponse = await fetch('/performance', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
                 
-                document.getElementById('devicesList').innerHTML = devicesHtml;
-                
-            } catch (error) {
-                console.error('Error loading devices:', error);
-                document.getElementById('devicesList').innerHTML = 'Error loading devices';
-            }
-        }
-
-        // Load rules
-        async function loadRules() {
-            try {
-                const response = await axios.get('/rules');
-                const rules = response.data;
-                
-                if (rules.length === 0) {
-                    document.getElementById('rulesList').innerHTML = 'No rules configured';
-                    return;
+                if (perfResponse.ok) {
+                    const perfData = await perfResponse.json();
+                    
+                    // Update CPU
+                    const cpuPercent = Math.round(perfData.cpu_usage);
+                    document.getElementById('cpuUsage').textContent = `${cpuPercent}%`;
+                    document.getElementById('cpuBar').style.width = `${cpuPercent}%`;
+                    
+                    // Update Memory
+                    const memPercent = Math.round(perfData.memory_usage);
+                    document.getElementById('memoryUsage').textContent = `${memPercent}%`;
+                    document.getElementById('memoryBar').style.width = `${memPercent}%`;
+                    
+                    // Update CPU Temperature
+                    document.getElementById('cpuTemp').textContent = `${perfData.temperature}°C`;
+                    
+                    // Update connections
+                    const connPercent = Math.min(100, (perfData.active_connections / 10) * 100);
+                    document.getElementById('activeConnections').textContent = perfData.active_connections;
+                    document.getElementById('connectionsBar').style.width = `${connPercent}%`;
                 }
-                
-                const rulesHtml = rules.map(rule => `
-                    <div class="border-b py-3">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <strong>${rule.name}</strong><br>
-                                <span class="text-gray-500">${rule.pattern} → ${rule.action}</span>
-                            </div>
-                            <div class="flex space-x-2">
-                                <span class="px-2 py-1 rounded text-xs ${rule.status === 'on' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
-                                    ${rule.status}
-                                </span>
-                                <button onclick="toggleRule(${rule.id})" class="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs">
-                                    ${rule.status === 'on' ? 'Disable' : 'Enable'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-                
-                document.getElementById('rulesList').innerHTML = rulesHtml;
-                
             } catch (error) {
-                console.error('Error loading rules:', error);
-                document.getElementById('rulesList').innerHTML = 'Error loading rules';
+                console.error('Error loading overview data:', error);
             }
         }
 
-        // Load logs
-        async function loadLogs() {
-            try {
-                // For now, show a simple message. In a real implementation, you'd fetch logs
-                document.getElementById('logsList').innerHTML = 'Log viewing functionality coming soon...';
-            } catch (error) {
-                console.error('Error loading logs:', error);
-                document.getElementById('logsList').innerHTML = 'Error loading logs';
-            }
-        }
-
-        // Load settings
-        async function loadSettings() {
-            try {
-                const response = await axios.get('/admin-info');
-                const adminInfo = response.data;
-                
-                // You could display admin info here if needed
-                console.log('Admin info loaded:', adminInfo);
-                
-            } catch (error) {
-                console.error('Error loading settings:', error);
-            }
-        }
-
-        // Change password
-        async function changePassword(event) {
-            event.preventDefault();
+        // Handle change password
+        async function handleChangePassword(e) {
+            e.preventDefault();
             
             const currentPassword = document.getElementById('currentPassword').value;
             const newPassword = document.getElementById('newPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             if (newPassword !== confirmPassword) {
-                showNotification('New passwords do not match', 'error');
+                showPasswordMessage('New passwords do not match', 'error');
                 return;
             }
             
             try {
-                await axios.post('/change-password', {
-                    current_password: currentPassword,
-                    new_password: newPassword,
-                    confirm_password: confirmPassword
+                const response = await fetch('/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword
+                    })
                 });
                 
-                showNotification('Password changed successfully!', 'success');
+                const data = await response.json();
                 
-                // Clear form
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
-                
-            } catch (error) {
-                showNotification(error.response?.data?.detail || 'Failed to change password', 'error');
-            }
-        }
-
-        // Block device
-        async function blockDevice(ipAddress) {
-            try {
-                await axios.post('/device/block', { ip_address: ipAddress });
-                showNotification(`Device ${ipAddress} blocked successfully`, 'success');
-                loadDevices(); // Refresh the list
-            } catch (error) {
-                showNotification(error.response?.data?.detail || 'Failed to block device', 'error');
-            }
-        }
-
-        // Toggle rule
-        async function toggleRule(ruleId) {
-            try {
-                await axios.post(`/rules/toggle/${ruleId}`);
-                showNotification('Rule toggled successfully', 'success');
-                loadRules(); // Refresh the list
-            } catch (error) {
-                showNotification(error.response?.data?.detail || 'Failed to toggle rule', 'error');
-            }
-        }
-
-        // Confirm system reset
-        async function confirmReset() {
-            if (confirm('⚠️ WARNING: This will reset ALL settings to factory defaults!\n\nThis includes:\n• Admin password reset to default\n• All device rules cleared\n• All logs cleared\n• All configurations reset\n\nType "RESET" to confirm:')) {
-                const confirmation = prompt('Type "RESET" to confirm:');
-                if (confirmation === 'RESET') {
-                    try {
-                        const response = await axios.post('/reset-system');
-                        showNotification(response.data.message, 'success');
-                        
-                        // Logout user after reset
-                        setTimeout(() => {
-                            logout();
-                        }, 2000);
-                        
-                    } catch (error) {
-                        showNotification(error.response?.data?.detail || 'System reset failed', 'error');
-                    }
+                if (response.ok) {
+                    showPasswordMessage('Password updated successfully!', 'success');
+                    document.getElementById('changePasswordForm').reset();
+                } else {
+                    showPasswordMessage(data.detail || 'Password change failed', 'error');
                 }
+            } catch (error) {
+                showPasswordMessage('Network error. Please try again.', 'error');
             }
         }
 
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const colors = {
-                success: 'bg-green-500',
-                error: 'bg-red-500',
-                warning: 'bg-yellow-500',
-                info: 'bg-blue-500'
-            };
-            
-            notification.className = `fixed top-4 right-4 px-6 py-3 rounded text-white ${colors[type]} shadow-lg`;
-            notification.textContent = message;
-            notification.classList.remove('hidden');
+        // Show password message
+        function showPasswordMessage(message, type) {
+            const messageDiv = document.getElementById('passwordMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `mt-4 p-3 rounded-md ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            messageDiv.classList.remove('hidden');
             
             setTimeout(() => {
-                notification.classList.add('hidden');
+                messageDiv.classList.add('hidden');
             }, 5000);
         }
 
-        // Auto-refresh overview every 30 seconds
-        setInterval(() => {
-            if (currentTab === 'overview' && authToken) {
-                loadOverview();
+        // Reset system
+        async function resetSystem() {
+            if (!confirm('⚠️ WARNING: This will reset PiGuard Pro to factory defaults!\n\nAll data, rules, and settings will be permanently deleted.\n\nAre you absolutely sure you want to continue?')) {
+                return;
             }
-        }, 30000);
+            
+            if (!confirm('🚨 FINAL WARNING: This action cannot be undone!\n\nType "RESET" to confirm:')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/reset-system', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    showResetMessage('✅ PiGuard Pro has been reset to factory defaults!', 'success');
+                    // Clear token and redirect to login
+                    setTimeout(() => {
+                        localStorage.removeItem('authToken');
+                        location.reload();
+                    }, 3000);
+                } else {
+                    const data = await response.json();
+                    showResetMessage(data.detail || 'System reset failed', 'error');
+                }
+            } catch (error) {
+                showResetMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        // Show reset message
+        function showResetMessage(message, type) {
+            const messageDiv = document.getElementById('resetMessage');
+            messageDiv.textContent = message;
+            messageDiv.className = `mt-4 p-3 rounded-md ${type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            messageDiv.classList.remove('hidden');
+        }
+
+        // Tab navigation
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tab buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active', 'border-pi-red', 'text-pi-red');
+                button.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.remove('hidden');
+            
+            // Add active class to selected tab button
+            event.target.classList.add('active', 'border-pi-red', 'text-pi-red');
+            event.target.classList.remove('border-transparent', 'text-gray-500');
+            
+            currentTab = tabName;
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('authToken');
+            clearInterval(refreshInterval);
+            location.reload();
+        }
     </script>
 </body>
 </html>

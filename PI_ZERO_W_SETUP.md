@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-This guide will help you set up the Target-Centric Admin Dashboard on your Raspberry Pi Zero W. The system is specifically optimized for the Pi Zero W's hardware constraints (512MB RAM, single-core ARM11 processor).
+This guide will help you set up PiGuard Pro - Advanced Network Control Dashboard on your Raspberry Pi Zero W. The system is specifically optimized for the Pi Zero W's hardware constraints (512MB RAM, single-core ARM11 processor).
 
 ## 📋 Prerequisites
 

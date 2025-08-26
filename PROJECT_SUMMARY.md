@@ -1,4 +1,4 @@
-# 📋 Target-Centric Admin Dashboard - Project Summary
+# 📋 PiGuard Pro - Advanced Network Control Dashboard - Project Summary
 
 ## 🎯 Project Overview
 A complete Raspberry Pi Zero W hotspot control system with comprehensive device management, content filtering, and real-time monitoring capabilities.

@@ -1,5 +1,5 @@
 [Unit]
-Description=Target-Centric Admin Dashboard Backend
+Description=PiGuard Pro - Advanced Network Control Dashboard
 After=network.target
 Wants=network.target
 
@@ -7,12 +7,12 @@ Wants=network.target
 Type=simple
 User=root
 Group=root
-WorkingDirectory=/home/pi/hotspot-dashboard
+WorkingDirectory=/home/pi/piguard-pro
 Environment=PATH=/usr/bin:/usr/local/bin
-Environment=PYTHONPATH=/home/pi/hotspot-dashboard
+Environment=PYTHONPATH=/home/pi/piguard-pro
 Environment=ADMIN_PASSWORD=your_secure_password_here
 Environment=SECRET_KEY=your_secret_key_here
-ExecStart=/usr/bin/python3 /home/pi/hotspot-dashboard/start_backend.py
+ExecStart=/usr/bin/python3 /home/pi/piguard-pro/project_launcher.py
 Restart=always
 RestartSec=10
 StandardOutput=journal

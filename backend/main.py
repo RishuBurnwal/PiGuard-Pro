@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Target-Centric Admin Dashboard - FastAPI Backend
+🛡️ PiGuard Pro - Advanced Network Control Dashboard - FastAPI Backend
 Main application entry point for the Raspberry Pi hotspot control system
 """
 
@@ -59,7 +59,7 @@ async def lifespan(app: FastAPI):
     global db, auth, network_control, mitm_controller, device_monitor, rules_engine, system_monitor
     
     # Startup
-    logger.info("🚀 Starting Target-Centric Admin Dashboard...")
+    logger.info("🛡️ Starting PiGuard Pro - Advanced Network Control Dashboard...")
     
     # Initialize database
     db = Database()

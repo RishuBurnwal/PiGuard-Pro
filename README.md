@@ -1,6 +1,26 @@
-# 🚀 Target-Centric Admin Dashboard for Raspberry Pi Zero W
+# 🛡️ PiGuard Pro - Advanced Network Control Dashboard
 
-A comprehensive network control center optimized for Raspberry Pi Zero W that treats every connected device as a target for monitoring, filtering, and content modification. **Now with complete change password functionality and system reset capabilities!**
+> **Professional Network Security & Control Center for Raspberry Pi**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-Zero%20W-red.svg)](https://www.raspberrypi.org/products/raspberry-pi-zero-w/)
+
+## 🎯 Overview
+
+**PiGuard Pro** is a comprehensive, target-aware network control dashboard designed specifically for Raspberry Pi hotspots. It transforms your Pi into a professional-grade network security appliance with advanced device management, traffic filtering, and real-time monitoring capabilities.
+
+### 🌟 Key Features
+
+- **🖥️ Device Management**: Monitor, block, throttle, and control connected devices
+- **🛡️ Advanced Security**: Per-device traffic filtering and content modification
+- **📊 Real-time Monitoring**: Live system performance and network statistics
+- **⚡ Pi Zero W Optimized**: Built specifically for resource-constrained environments
+- **🔐 Single Admin System**: Router-style authentication with enhanced security
+- **📱 Modern Dashboard**: Beautiful, responsive web interface
+- **🔄 Dynamic Rules Engine**: On-the-fly traffic modification and filtering
+- **💾 Persistent Storage**: SQLite database with automatic backups
 
 ## 🍓 Raspberry Pi Zero W Optimizations
 
@@ -95,6 +115,15 @@ This system transforms your Raspberry Pi Zero W into a mission control center wh
 
 ## 🗄️ Architecture
 
+**PiGuard Pro** combines multiple technologies to create a robust network control system:
+
+- **Backend**: FastAPI (Python) with async support
+- **Database**: SQLite with optimized Pi Zero W settings
+- **Proxy**: Mitmproxy for traffic interception and modification
+- **Network Tools**: iptables, dnsmasq, tc for traffic control
+- **Frontend**: Modern HTML/JavaScript with Tailwind CSS
+- **Authentication**: JWT-based secure admin access
+
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   HTML/JS      │    │   FastAPI       │    │   Network       │
@@ -113,65 +142,53 @@ This system transforms your Raspberry Pi Zero W into a mission control center wh
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Raspberry Pi Zero W** with WiFi capability
-- **Raspberry Pi OS Lite** (recommended for headless operation)
-- Python 3.8+ (included in Pi OS)
-- **Root access** for network commands
-- **MicroSD card** (16GB+ recommended)
+- Raspberry Pi Zero W (or compatible)
+- MicroSD card (16GB+ recommended)
+- Power supply (2.5A recommended)
+- WiFi network for initial setup
 
 ### Installation
 
-#### Option 1: Using Project Launcher (Recommended)
+1. **Clone the repository**
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd raspberry-pi-hostapd
-
-# Run the project launcher
-sudo python3 project_launcher.py
-
-# Follow the interactive menu:
-# 1. Test all components
-# 2. Update libraries
-# 3. Start complete project
+git clone https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git
+cd Raspberry-Pi-Advanced-chat-server
 ```
 
-#### Option 2: Manual Setup
+2. **Install dependencies**
 ```bash
-# Install system dependencies
-sudo apt update
-sudo apt install -y python3-pip python3-venv hostapd dnsmasq iptables-persistent
-
-# Create virtual environment (saves space)
-python3 -m venv venv
-source venv/bin/activate
-
-# Install Python dependencies
 pip install -r requirements.txt
-
-# Start backend
-cd backend
-python main.py
 ```
 
-### Access Dashboard
-- **URL**: `http://[PI_IP]:8000`
-- **Default credentials**: `admin` / `admin123`
-- **Change password immediately** after first login!
+3. **Run the project launcher**
+```bash
+python project_launcher.py
+```
+
+4. **Access the dashboard**
+   - Open your browser to `http://[PI_IP]:8080`
+   - Login with default credentials: `admin` / `admin123`
+   - **Important**: Change password immediately after first login
 
 ## 🔧 Configuration
 
-### Environment Variables
-Create `.env` file:
+**PiGuard Pro** uses environment variables for configuration. Copy `.env.example` to `.env` and modify:
+
 ```env
-SECRET_KEY=your-secret-key
+# Security
+SECRET_KEY=your-super-secret-key-here
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=secure-password
+
+# Network Configuration
 WIFI_INTERFACE=wlan0
 BRIDGE_INTERFACE=br0
 PI_ZERO_W=true
+
+# Performance Settings
 MAX_CONNECTIONS=10
 MEMORY_LIMIT=400MB
+WORKER_PROCESSES=1
 ```
 
 ### Pi Zero W Specific Settings
@@ -230,24 +247,24 @@ The system automatically configures:
 
 ## 📝 API Endpoints
 
+**PiGuard Pro** provides a comprehensive REST API:
+
 ### Authentication
-- `POST /login` - Admin login
-- `POST /change-password` - Change admin password ⭐ **NEW**
-- `GET /admin-info` - Get admin information ⭐ **NEW**
+- `POST /login` - Admin authentication
+- `POST /change-password` - Update admin password
+- `GET /admin-info` - Get admin user details
 
-### Devices
-- `GET /devices` - List all devices
-- `POST /device/block` - Block device
+### Device Management
+- `GET /devices` - List all connected devices
+- `POST /device/block` - Block specific device
 - `POST /device/unblock` - Unblock device
-- `POST /device/throttle` - Throttle bandwidth
-- `POST /device/kick` - Disconnect device
+- `POST /device/throttle` - Throttle device bandwidth
+- `POST /device/kick` - Disconnect device from WiFi
 
-### Rules
-- `GET /rules` - List all rules
-- `POST /rules/add` - Add new rule
-- `POST /rules/update/{id}` - Update rule
-- `DELETE /rules/delete/{id}` - Delete rule
-- `POST /rules/toggle/{id}` - Toggle rule status
+### System Control
+- `GET /status` - System status and health
+- `GET /performance` - Performance metrics
+- `POST /reset-system` - Factory reset (Router Reset)
 
 ### Logs
 - `GET /logs/{ip}` - Get logs for specific IP
@@ -273,17 +290,26 @@ The system provides comprehensive logging optimized for Pi Zero W:
 
 ## 🚨 Troubleshooting
 
-### Pi Zero W Specific Issues
-1. **Low memory**: Monitor RAM usage, enable swap if needed
-2. **Slow performance**: Check CPU temperature, ensure proper cooling
-3. **WiFi issues**: Verify 2.4GHz compatibility
-4. **SD card corruption**: Use high-quality SD cards, enable journaling
-
 ### Common Issues
-1. **Permission denied**: Ensure scripts run with sudo
-2. **Interface not found**: Check WiFi interface name in config
-3. **Database errors**: Verify SQLite file permissions
-4. **Password change fails**: Ensure new password meets requirements
+
+**1. Service won't start**
+```bash
+# Check system resources
+python project_launcher.py --health-check
+
+# View detailed logs
+python project_launcher.py --logs
+```
+
+**2. Dashboard not accessible**
+- Verify backend is running on port 8080
+- Check firewall settings
+- Ensure WiFi interface is active
+
+**3. Performance issues**
+- Monitor memory usage with `htop`
+- Check CPU temperature
+- Verify MicroSD card health
 
 ### Logs Location
 - System logs: `/var/log/hostapd/`
@@ -350,42 +376,40 @@ The `project_launcher.py` provides a comprehensive management interface:
 
 ## 🤝 Contributing
 
-This is a comprehensive network control system optimized for Raspberry Pi Zero W. Contributions welcome for:
-- Additional filtering rules
-- UI improvements
-- Network protocol support
-- Performance optimizations
-- **Pi Zero W specific optimizations**
-- **Security enhancements**
-- **Dashboard features**
+We welcome contributions to **PiGuard Pro**! Please read our contributing guidelines and submit pull requests.
+
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly on Pi Zero W
+5. Submit a pull request
 
 ## 📄 License
 
-MIT License - See [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-The project is licensed under the MIT License, which provides:
-- **Freedom to use** for any purpose (commercial or personal)
-- **Freedom to modify** and adapt the code
-- **Freedom to distribute** copies of the software
-- **No warranty** or liability protection
-- **Attribution requirement** for the original copyright notice
+**Copyright © 2025 Rishu Burnwal**
 
-**⚠️ Important**: This software provides powerful network control capabilities. Users are responsible for complying with local laws and regulations regarding network monitoring and content filtering.
-
----
-
-**⚠️ Warning**: This system provides powerful network control capabilities. Use responsibly and ensure compliance with local laws and regulations regarding network monitoring and content filtering.
-
-**🍓 Pi Zero W Note**: This system is specifically optimized for Raspberry Pi Zero W's hardware constraints. For production use, consider using a Pi 3 or Pi 4 for better performance with more devices.
-
-**🔑 Security Note**: Always change the default password (admin/admin123) immediately after installation. The system includes robust password validation and secure storage mechanisms.
-
-**🔄 Reset Warning**: The system reset functionality will clear ALL data and settings. Use only when absolutely necessary and ensure you have backups of important configurations.
-
----
-
-## 👨‍💻 **Author & Maintainer**
+## 👨‍💻 Author & Maintainer
 
 **Rishu Burnwal** - [GitHub Profile](https://github.com/RishuBurnwal)
 
-This project is developed and maintained by Rishu Burnwal. For questions, issues, or contributions, please visit the GitHub repository or contact the maintainer.
+**Rishu Burnwal** - [LinkedIn Profile](https://www.linkedin.com/in/rishuburnwal/)
+
+- **Project**: PiGuard Pro - Advanced Network Control Dashboard
+- **Repository**: [https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server.git)
+- **Contact**: [GitHub Issues](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server/issues)
+
+**PiGuard Pro** is actively maintained and regularly updated with new features and security improvements.
+
+---
+
+<div align="center">
+
+**🛡️ PiGuard Pro** - *Professional Network Security for Raspberry Pi*
+
+[![GitHub stars](https://img.shields.io/github/stars/RishuBurnwal/Raspberry-Pi-Advanced-chat-server?style=social)](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server)
+[![GitHub forks](https://img.shields.io/github/forks/RishuBurnwal/Raspberry-Pi-Advanced-chat-server?style=social)](https://github.com/RishuBurnwal/Raspberry-Pi-Advanced-chat-server)
+
+</div>

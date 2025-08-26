@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-🚀 Target-Centric Admin Dashboard - Backend Startup Script
+🛡️ PiGuard Pro - Advanced Network Control Dashboard - Backend Startup Script
 Optimized for Raspberry Pi Zero W
 """
 
@@ -37,7 +37,7 @@ def setup_logging():
         )
         
         logger = logging.getLogger(__name__)
-        logger.info("🚀 Starting Target-Centric Admin Dashboard Backend...")
+        logger.info("🛡️ Starting PiGuard Pro - Advanced Network Control Dashboard Backend...")
         
         return logger
         
